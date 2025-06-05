@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Dance Game: RITEC-8 & Accessibility Implementation Grid</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e5e5;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: #8B5CF6;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e5e5e5;
+        }
+        
+        .grid-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        th {
+            background-color: #8B5CF6;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .dimension-header {
+            background-color: #6D28D9;
+            width: 250px;
+        }
+        
+        .accessibility-header {
+            background-color: #059669;
+        }
+        
+        td {
+            padding: 15px;
+            border: 1px solid #e5e5e5;
+            vertical-align: top;
+        }
+        
+        .dimension-name {
+            font-weight: 600;
+            color: #6D28D9;
+            background-color: #F3E8FF;
+        }
+        
+        .accessibility-name {
+            font-weight: 600;
+            color: #059669;
+            background-color: #D1FAE5;
+        }
+        
+        .feature-cell {
+            position: relative;
+            min-height: 120px;
+        }
+        
+        .level-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .level-item {
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .level-low {
+            background-color: #FEE2E2;
+            border: 1px solid #FCA5A5;
+        }
+        
+        .level-mid {
+            background-color: #FEF3C7;
+            border: 1px solid #FCD34D;
+        }
+        
+        .level-high {
+            background-color: #D1FAE5;
+            border: 1px solid #6EE7B7;
+        }
+        
+        .level-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .level-label {
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .level-description {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .save-btn {
+            background-color: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .save-btn:hover {
+            background-color: #7C3AED;
+        }
+        
+        .instructions {
+            background-color: #F3E8FF;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #6D28D9;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Brain Dance Game: RITEC-8 & Accessibility Implementation Grid</h1>
+        <p class="subtitle">Click on any implementation level to view or edit details</p>
+        
+        <div class="instructions">
+            <strong>Instructions:</strong> This grid shows how each game feature addresses both RITEC-8 dimensions and accessibility needs at different implementation levels. 
+            Click on any level (Low/Mid/High) to view or add descriptions. Use the tabs to switch between RITEC-8 and Accessibility views.
+        </div>
+        
+        <div class="tab-container">
+            <button class="tab active" onclick="switchTab('ritec8')">RITEC-8 Dimensions</button>
+            <button class="tab" onclick="switchTab('accessibility')">Accessibility Needs</button>
+        </div>
+        
+        <!-- RITEC-8 Grid -->
+        <div id="ritec8Grid" class="grid-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="dimension-header">RITEC-8 Dimension</th>
+                        <th>Character Design</th>
+                        <th>Gameplay</th>
+                        <th>Music</th>
+                        <th>UI</th>
+                    </tr>
+                </thead>
+                <tbody id="ritec8Body">
+                    <!-- Grid will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Accessibility Grid -->
+        <div id="accessibilityGrid" class="grid-container hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="dimension-header accessibility-header">Accessibility Need</th>
+                        <th>Character Design</th>
+                        <th>Gameplay</th>
+                        <th>Music</th>
+                        <th>UI</th>
+                    </tr>
+                </thead>
+                <tbody id="accessibilityBody">
+                    <!-- Grid will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color level-low"></div>
+                <span>Low Implementation</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color level-mid"></div>
+                <span>Mid Implementation</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color level-high"></div>
+                <span>High Implementation</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for editing -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Edit Implementation</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Feature:</label>
+                    <input type="text" id="modalFeature" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dimension/Need:</label>
+                    <input type="text" id="modalDimension" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Level:</label>
+                    <input type="text" id="modalLevel" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description:</label>
+                    <textarea id="modalDescription" class="form-control" rows="4" placeholder="Enter implementation description..."></textarea>
+                </div>
+                <button class="save-btn" onclick="saveDescription()">Save Description</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // RITEC-8 dimensions
+        const ritec8Dimensions = [
+            'Competence',
+            'Emotions',
+            'Creativity',
+            'Autonomy',
+            'Identities',
+            'Relationships',
+            'Diversity, Equity & Inclusion',
+            'Safety & Security'
+        ];
+        
+        // Accessibility needs based on Brain Dance Game documentation
+        const accessibilityNeeds = [
+            'Sensory Sensitivities',
+            'Motor/Coordination Challenges',
+            'Cognitive Processing',
+            'Visual Learning Support',
+            'Attention & Focus',
+            'Anxiety & Emotional Regulation',
+            'Social Comfort',
+            'Physical Space Limitations'
+        ];
+        
+        const features = ['Character Design', 'Gameplay', 'Music', 'UI'];
+        
+        // Pre-populated RITEC-8 data
+        const ritec8Data = {
+            'Competence': {
+                'Character Design': {
+                    low: '3D avatar shows basic movement mirroring',
+                    mid: 'Avatar provides clear visual feedback with correct/incorrect indicators',
+                    high: 'Customizable avatar with detailed skeletal tracking and personalized progress visualization'
+                },
+                'Gameplay': {
+                    low: 'Basic 8 Brain Dance components available',
+                    mid: 'Progressive difficulty with achievement system',
+                    high: 'Adaptive difficulty with detailed skill tracking and personalized progression paths'
+                },
+                'Music': {
+                    low: 'Static background music during activities',
+                    mid: 'Tempo progression (65-105 BPM) supports skill development',
+                    high: 'Dynamic audio feedback synchronized with movement accuracy and progress'
+                },
+                'UI': {
+                    low: 'Basic progress display',
+                    mid: 'Hub World with visual progression map and achievements',
+                    high: 'Comprehensive analytics dashboard with detailed metrics and milestone celebrations'
+                }
+            },
+            'Emotions': {
+                'Character Design': {
+                    low: 'Neutral avatar design',
+                    mid: 'Breathing animations and calming visual design',
+                    high: 'Emotion-responsive avatar with visual biofeedback integration'
+                },
+                'Gameplay': {
+                    low: 'Breath component for basic calming',
+                    mid: 'Vestibular exercises for anxiety, flexible session lengths',
+                    high: 'Personalized emotional regulation pathways with mood tracking'
+                },
+                'Music': {
+                    low: 'Calming background music option',
+                    mid: '"Soothe" and "Groove" modes for emotional flexibility',
+                    high: 'Adaptive music that responds to user\'s emotional state and movement quality'
+                },
+                'UI': {
+                    low: 'Calming color scheme',
+                    mid: 'Customizable visuals with celebration animations',
+                    high: 'Emotion-aware interface that adapts to user\'s regulatory needs'
+                }
+            },
+            'Creativity': {
+                'Character Design': {
+                    low: 'Basic avatar movement',
+                    mid: 'Customizable appearance with movement style options',
+                    high: 'Full creative expression through avatar design and movement interpretation'
+                },
+                'Gameplay': {
+                    low: 'Follow prescribed movements',
+                    mid: 'Multiple ways to complete each movement pattern',
+                    high: 'Open-ended movement exploration with creative challenges'
+                },
+                'Music': {
+                    low: 'Single music style',
+                    mid: 'Genre mixing from classical to lo-fi',
+                    high: 'User-created playlists and movement-music improvisation modes'
+                },
+                'UI': {
+                    low: 'Standard visual themes',
+                    mid: 'Labanotation symbols and movement metaphors',
+                    high: 'User-designed themes and creative visualization tools'
+                }
+            },
+            'Autonomy': {
+                'Character Design': {
+                    low: 'Pre-set avatar options',
+                    mid: 'Customizable appearance and movement pacing',
+                    high: 'Complete avatar creation system with saved profiles'
+                },
+                'Gameplay': {
+                    low: 'Linear progression through components',
+                    mid: 'Hub World with free choice of activities',
+                    high: 'Fully customizable practice sessions with personal goal setting'
+                },
+                'Music': {
+                    low: 'On/off music toggle',
+                    mid: 'Volume controls for each audio element',
+                    high: 'Complete audio customization with personal preference learning'
+                },
+                'UI': {
+                    low: 'Basic settings menu',
+                    mid: 'Comprehensive customization options',
+                    high: 'Multiple user profiles with instant preference switching'
+                }
+            },
+            'Identities': {
+                'Character Design': {
+                    low: 'Generic avatar representation',
+                    mid: 'Personalized avatar reflecting user preferences',
+                    high: 'Avatar evolution system showing growth journey'
+                },
+                'Gameplay': {
+                    low: 'Standard achievement system',
+                    mid: 'Personal movement history and unique achievement paths',
+                    high: 'Narrative system that tells user\'s movement story'
+                },
+                'Music': {
+                    low: 'Default music preferences',
+                    mid: 'Genre selection reflecting musical identity',
+                    high: 'Musical journey tracking with preference evolution'
+                },
+                'UI': {
+                    low: 'Basic user profile',
+                    mid: 'Personal galleries and custom themes',
+                    high: 'Rich identity dashboard with shareable accomplishment portfolios'
+                }
+            },
+            'Relationships': {
+                'Character Design': {
+                    low: 'Individual avatar only',
+                    mid: 'Shareable avatar designs',
+                    high: 'Collaborative avatar creation and movement mirroring'
+                },
+                'Gameplay': {
+                    low: 'Solo play only',
+                    mid: 'Optional multiplayer with achievement sharing',
+                    high: 'Rich social features with mentorship and collaborative challenges'
+                },
+                'Music': {
+                    low: 'Individual music experience',
+                    mid: 'Shared musical preferences',
+                    high: 'Collaborative playlists and synchronized movement sessions'
+                },
+                'UI': {
+                    low: 'Private progress only',
+                    mid: 'Achievement sharing interfaces',
+                    high: 'Community features with safe interaction spaces'
+                }
+            },
+            'Diversity, Equity & Inclusion': {
+                'Character Design': {
+                    low: 'Limited representation options',
+                    mid: 'Diverse body types and cultural elements',
+                    high: 'Comprehensive representation with adaptive movement demonstrations'
+                },
+                'Gameplay': {
+                    low: 'One-size-fits-all approach',
+                    mid: 'Adaptive difficulty for different abilities',
+                    high: 'Fully inclusive design with multiple success pathways'
+                },
+                'Music': {
+                    low: 'Western music focus',
+                    mid: 'Culturally diverse musical styles',
+                    high: 'Global music representation with cultural movement interpretations'
+                },
+                'UI': {
+                    low: 'English-only interface',
+                    mid: 'Icon-based navigation with colorblind options',
+                    high: 'Multi-language support with full accessibility features'
+                }
+            },
+            'Safety & Security': {
+                'Character Design': {
+                    low: 'Basic safety guidelines',
+                    mid: 'Safe movement ranges with appropriate content',
+                    high: 'Injury prevention system with real-time form correction'
+                },
+                'Gameplay': {
+                    low: 'Home-based practice',
+                    mid: 'Gradual progression with clear instructions',
+                    high: 'Comprehensive safety protocols with emergency pause features'
+                },
+                'Music': {
+                    low: 'Appropriate content filtering',
+                    mid: 'Controlled volume levels with calming options',
+                    high: 'Hearing protection with personalized safe volume limits'
+                },
+                'UI': {
+                    low: 'Basic privacy settings',
+                    mid: 'Local data storage with parental controls',
+                    high: 'Enterprise-grade security with full COPPA/GDPR compliance'
+                }
+            }
+        };
+        
+        // Pre-populated accessibility data based on Brain Dance Game personas
+        const accessibilityData = {
+            'Sensory Sensitivities': {
+                'Character Design': {
+                    low: 'Basic visual design with standard colors',
+                    mid: 'Reduced visual complexity options for avatar',
+                    high: 'Full sensory customization including visual intensity, animation speed, and texture options (Alex)'
+                },
+                'Gameplay': {
+                    low: 'Standard movement feedback',
+                    mid: 'Adjustable feedback intensity and timing',
+                    high: 'Personalized sensory profiles with predictive adjustments based on user state'
+                },
+                'Music': {
+                    low: 'Volume control only',
+                    mid: 'Separate controls for music elements, frequency filtering',
+                    high: 'AI-driven audio adaptation based on sensory tolerance patterns (Alex)'
+                },
+                'UI': {
+                    low: 'Standard interface elements',
+                    mid: 'Low-stimulation mode with reduced animations',
+                    high: 'Complete sensory environment control with saved presets for different states'
+                }
+            },
+            'Motor/Coordination Challenges': {
+                'Character Design': {
+                    low: 'Basic movement mirroring',
+                    mid: 'Simplified skeletal representation for clarity',
+                    high: 'Adaptive avatar that highlights achievable movements based on ability (Alex)'
+                },
+                'Gameplay': {
+                    low: 'Standard movement patterns',
+                    mid: 'Adjustable movement tolerance and success ranges',
+                    high: 'Personalized movement adaptations with alternative pattern suggestions'
+                },
+                'Music': {
+                    low: 'Fixed tempo music',
+                    mid: 'Tempo adjustment options for each component',
+                    high: 'Dynamic tempo that adapts to user\'s movement capabilities'
+                },
+                'UI': {
+                    low: 'Standard button sizes and targets',
+                    mid: 'Enlarged interaction areas with reduced precision requirements',
+                    high: 'Gesture-based navigation with customizable interaction zones'
+                }
+            },
+            'Cognitive Processing': {
+                'Character Design': {
+                    low: 'Standard avatar feedback',
+                    mid: 'Clear visual indicators for correct movements',
+                    high: 'Multi-modal feedback system with processing time adjustments (Jamie)'
+                },
+                'Gameplay': {
+                    low: 'Fixed instruction delivery',
+                    mid: 'Repeatable instructions with visual aids',
+                    high: 'Adaptive instruction pacing based on comprehension indicators'
+                },
+                'Music': {
+                    low: 'Continuous background music',
+                    mid: 'Structured audio cues for transitions',
+                    high: 'Cognitive load-aware audio system that simplifies during complex tasks'
+                },
+                'UI': {
+                    low: 'Text-based instructions',
+                    mid: 'Visual instructions with consistent symbols',
+                    high: 'Multimodal instruction system with learning style adaptation'
+                }
+            },
+            'Visual Learning Support': {
+                'Character Design': {
+                    low: 'Basic movement demonstration',
+                    mid: 'Enhanced visual cues and movement trails',
+                    high: 'Rich visual feedback with Labanotation integration (Jamie)'
+                },
+                'Gameplay': {
+                    low: 'Standard gameplay visuals',
+                    mid: 'Visual progress indicators and pattern recognition aids',
+                    high: 'Complete visual learning system with symbol-based progression'
+                },
+                'Music': {
+                    low: 'Audio-only cues',
+                    mid: 'Visual rhythm indicators synchronized with music',
+                    high: 'Synesthetic feedback system connecting sound to visual patterns'
+                },
+                'UI': {
+                    low: 'Text-heavy interface',
+                    mid: 'Icon-based navigation with visual hierarchy',
+                    high: 'Fully visual interface with minimal text dependency (Jamie)'
+                }
+            },
+            'Attention & Focus': {
+                'Character Design': {
+                    low: 'Standard avatar presence',
+                    mid: 'Attention-grabbing visual elements for key movements',
+                    high: 'Dynamic focus assistance with attention state monitoring (Maya)'
+                },
+                'Gameplay': {
+                    low: 'Continuous activities',
+                    mid: 'Structured breaks and shorter activity segments',
+                    high: 'Attention-aware pacing with automatic break suggestions'
+                },
+                'Music': {
+                    low: 'Consistent audio throughout',
+                    mid: 'Varied musical elements to maintain engagement',
+                    high: 'Attention-optimized soundscapes that adapt to focus levels (Maya)'
+                },
+                'UI': {
+                    low: 'Static interface',
+                    mid: 'Reduced distractions with focus mode options',
+                    high: 'Smart UI that hides non-essential elements based on attention patterns'
+                }
+            },
+            'Anxiety & Emotional Regulation': {
+                'Character Design': {
+                    low: 'Neutral avatar design',
+                    mid: 'Calming visual elements and breathing animations',
+                    high: 'Biofeedback-integrated avatar for real-time regulation support (Maya)'
+                },
+                'Gameplay': {
+                    low: 'Standard activity progression',
+                    mid: 'Anxiety-reducing components prioritized (Breath, Vestibular)',
+                    high: 'Emotion-responsive gameplay with regulatory movement suggestions'
+                },
+                'Music': {
+                    low: 'Calming music option',
+                    mid: '"Soothe" mode with anxiety-reducing soundscapes',
+                    high: 'Therapeutic sound design with personalized calming profiles (Maya)'
+                },
+                'UI': {
+                    low: 'Standard interface',
+                    mid: 'Calming color schemes and smooth transitions',
+                    high: 'Anxiety-aware UI with panic button and instant calm mode'
+                }
+            },
+            'Social Comfort': {
+                'Character Design': {
+                    low: 'Individual avatar only',
+                    mid: 'Privacy controls for avatar sharing',
+                    high: 'Graduated social features with comfort level controls (Alex)'
+                },
+                'Gameplay': {
+                    low: 'Solo play focus',
+                    mid: 'Optional multiplayer with full privacy controls',
+                    high: 'Social scaffolding system for gradual comfort building'
+                },
+                'Music': {
+                    low: 'Individual audio experience',
+                    mid: 'Shared music options with individual volume',
+                    high: 'Social audio features with personal space preservation'
+                },
+                'UI': {
+                    low: 'Private interface',
+                    mid: 'Selective sharing options for achievements',
+                    high: 'Granular social controls with comfort indicators (Alex)'
+                }
+            },
+            'Physical Space Limitations': {
+                'Character Design': {
+                    low: 'Full-body movement avatar',
+                    mid: 'Adaptable avatar for seated/standing options',
+                    high: 'Space-aware avatar that suggests modified movements (Maya)'
+                },
+                'Gameplay': {
+                    low: 'Standard movement requirements',
+                    mid: 'Modified movements for small spaces',
+                    high: 'Intelligent space adaptation with custom movement alternatives'
+                },
+                'Music': {
+                    low: 'Standard audio mix',
+                    mid: 'Headphone-optimized audio options',
+                    high: 'Spatial audio that adapts to room acoustics and neighbors'
+                },
+                'UI': {
+                    low: 'Fixed camera positioning',
+                    mid: 'Flexible camera setup for different spaces',
+                    high: 'Auto-calibrating system for any space configuration (Maya)'
+                }
+            }
+        };
+        
+        let currentEdit = {
+            dimension: '',
+            feature: '',
+            level: '',
+            type: 'ritec8'
+        };
+        
+        let activeTab = 'ritec8';
+        
+        // Initialize both grids
+        function initializeGrids() {
+            initializeGrid('ritec8', ritec8Dimensions, ritec8Data, 'ritec8Body', 'dimension-name');
+            initializeGrid('accessibility', accessibilityNeeds, accessibilityData, 'accessibilityBody', 'accessibility-name');
+        }
+        
+        function initializeGrid(type, dimensions, data, bodyId, cellClass) {
+            const tbody = document.getElementById(bodyId);
+            tbody.innerHTML = ''; // Clear existing content
+            
+            dimensions.forEach(dimension => {
+                const row = document.createElement('tr');
+                
+                // Dimension name cell
+                const dimCell = document.createElement('td');
+                dimCell.className = cellClass;
+                dimCell.textContent = dimension;
+                row.appendChild(dimCell);
+                
+                // Feature cells
+                features.forEach(feature => {
+                    const cell = document.createElement('td');
+                    cell.className = 'feature-cell';
+                    
+                    const levelContainer = document.createElement('div');
+                    levelContainer.className = 'level-container';
+                    
+                    ['low', 'mid', 'high'].forEach(level => {
+                        const levelItem = document.createElement('div');
+                        levelItem.className = `level-item level-${level}`;
+                        levelItem.onclick = () => openModal(dimension, feature, level, type);
+                        
+                        const levelLabel = document.createElement('div');
+                        levelLabel.className = 'level-label';
+                        levelLabel.textContent = level.toUpperCase();
+                        
+                        const levelDesc = document.createElement('div');
+                        levelDesc.className = 'level-description';
+                        levelDesc.id = `desc-${type}-${dimension}-${feature}-${level}`.replace(/[,\s&]/g, '');
+                        
+                        // Load pre-populated data if available
+                        if (data[dimension] && 
+                            data[dimension][feature] && 
+                            data[dimension][feature][level]) {
+                            levelDesc.textContent = data[dimension][feature][level];
+                        } else {
+                            levelDesc.textContent = 'Click to add description';
+                            levelDesc.style.fontStyle = 'italic';
+                            levelDesc.style.color = '#999';
+                        }
+                        
+                        levelItem.appendChild(levelLabel);
+                        levelItem.appendChild(levelDesc);
+                        levelContainer.appendChild(levelItem);
+                    });
+                    
+                    cell.appendChild(levelContainer);
+                    row.appendChild(cell);
+                });
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide grids
+            if (tab === 'ritec8') {
+                document.getElementById('ritec8Grid').classList.remove('hidden');
+                document.getElementById('accessibilityGrid').classList.add('hidden');
+            } else {
+                document.getElementById('ritec8Grid').classList.add('hidden');
+                document.getElementById('accessibilityGrid').classList.remove('hidden');
+            }
+        }
+        
+        function openModal(dimension, feature, level, type) {
+            currentEdit = { dimension, feature, level, type };
+            
+            document.getElementById('modalTitle').textContent = `Edit ${feature} - ${dimension}`;
+            document.getElementById('modalFeature').value = feature;
+            document.getElementById('modalDimension').value = dimension;
+            document.getElementById('modalLevel').value = level.toUpperCase();
+            
+            const descId = `desc-${type}-${dimension}-${feature}-${level}`.replace(/[,\s&]/g, '');
+            const currentDesc = document.getElementById(descId);
+            
+            if (currentDesc && !currentDesc.style.fontStyle) {
+                document.getElementById('modalDescription').value = currentDesc.textContent;
+            } else {
+                document.getElementById('modalDescription').value = '';
+            }
+            
+            document.getElementById('editModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        
+        function saveDescription() {
+            const description = document.getElementById('modalDescription').value;
+            const descId = `desc-${currentEdit.type}-${currentEdit.dimension}-${currentEdit.feature}-${currentEdit.level}`.replace(/[,\s&]/g, '');
+            const descElement = document.getElementById(descId);
+            
+            if (description.trim()) {
+                descElement.textContent = description;
+                descElement.style.fontStyle = 'normal';
+                descElement.style.color = '#333';
+                
+                // Save to appropriate data structure
+                const dataStore = currentEdit.type === 'ritec8' ? ritec8Data : accessibilityData;
+                
+                if (!dataStore[currentEdit.dimension]) {
+                    dataStore[currentEdit.dimension] = {};
+                }
+                if (!dataStore[currentEdit.dimension][currentEdit.feature]) {
+                    dataStore[currentEdit.dimension][currentEdit.feature] = {};
+                }
+                dataStore[currentEdit.dimension][currentEdit.feature][currentEdit.level] = description;
+            }
+            
+            closeModal();
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Initialize on load
+        initializeGrids();
+    </script>
+</body>
+</html>
